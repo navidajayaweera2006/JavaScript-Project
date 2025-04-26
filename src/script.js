@@ -395,23 +395,28 @@ function deleteCategory(categoryName) {
     return;
   }
 
-  if (
-    confirm(`Are you sure you want to delete the "${categoryName}" category?`)
-  ) {
+  if (confirm(`Are you sure you want to delete the "${categoryName}" category?`)) {
     // Remove category from array
     categories = categories.filter((cat) => cat !== categoryName);
 
-    // Update transactions with this category to "Other" or first available category
+    // Update transactions with this category to "Other"
+    // Removed the unnecessary redeclaration of transactions
     const defaultCategory = "Other";
-    const transactions = getTransactionsFromStorage();
-
+    
     transactions.forEach((transaction) => {
       if (transaction.category === categoryName) {
         transaction.category = defaultCategory;
       }
     });
 
-    updateLocalStorage();
+    // Save both categories and transactions
+    localStorage.setItem("categories", JSON.stringify(categories));
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+    
+    // Update UI
+    const categoryDropdowns = [document.getElementById("category")];
+    updateCategoryDropdowns(categoryDropdowns);
+    renderCategoryList();
   }
 }
 
@@ -423,7 +428,6 @@ function saveCategoriesAndUpdate() {
   renderCategoryList();
 }
 
-// Update all category dropdowns
 function updateCategoryDropdowns(categoryDropdowns) {
   categoryDropdowns.forEach((dropdown) => {
     if (!dropdown) return;
@@ -431,18 +435,14 @@ function updateCategoryDropdowns(categoryDropdowns) {
     const currentValue = dropdown.value;
     dropdown.innerHTML = "";
 
-    // Add all categories
     categories.forEach((category) => {
       dropdown.insertAdjacentHTML(
-        "beforeend",
-        `<option value="${category.toLowerCase()}">${category}</option>`
+        'beforeend',
+        `<option value="${category}">${category}</option>`
       );
     });
 
-    if (
-      currentValue &&
-      dropdown.querySelector(`option[value="${currentValue}"]`)
-    ) {
+    if (currentValue && dropdown.querySelector(`option[value="${currentValue}"]`)) {
       dropdown.value = currentValue;
     }
   });
