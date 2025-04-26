@@ -115,7 +115,7 @@ header {
   width: 95%;
   max-width: 1200px;
   margin: 0 auto;
-  /* Bug #23: display should flex */
+  display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
@@ -287,8 +287,8 @@ select {
 
 .tab-content.active {
   display: block;
-  /* Bug #24: overflow-y should be set to auto */
   height: 370px;
+  overflow-y: auto;
 }
 
 /* Transaction List */
